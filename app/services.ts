@@ -58,7 +58,7 @@ export async function downloadLevel(id: string): Promise<FullLevel | null> {
     formData.append("secret", "Wmfd2893gb7");
     formData.append("levelID",id);
 
-    const r = await fetch("http://www.boomlings.com/database/downloadGJLevel22.php", {
+    const r = await fetch("https://gdapi.tjf1.dev/database/downloadGJLevel22.php", {
         method: "POST",
         body: formData,
         headers: { "User-Agent": "" }, 
@@ -82,7 +82,7 @@ export async function fetchLevelInfo(id: string): Promise<FullLevel | null> {
     formData.append("str", id);
     formData.append("type", "0");
 
-    const r = await fetch("http://www.boomlings.com/database/getGJLevels21.php", {
+    const r = await fetch("https://gdapi.tjf1.dev/database/getGJLevels21.php", {
         method: "POST",
         body: formData,
         headers: { "User-Agent": "" },
