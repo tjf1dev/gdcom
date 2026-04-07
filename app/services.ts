@@ -1,6 +1,6 @@
 import { Creator, FullLevel } from "./types/level";
-const levelCache = new Map<number, FullLevel>()
-const levelDataCache = new Map<number, FullLevel>()
+const levelCache = new Map<string, FullLevel>()
+const levelDataCache = new Map<string, FullLevel>()
 function safeDecodeBase64(str: string): string {
     try {
         return Buffer.from(str, "base64").toString("utf-8");
@@ -52,35 +52,49 @@ export function unpackLevelResponse(data: string, type: "download" | "get"): Ful
         demon: Boolean(rawLevel["17"])
     }; return level;
 }
-export async function downloadLevel(id: number): Promise<FullLevel | null> {
+export async function downloadLevel(id: string): Promise<FullLevel | null> {
     if (levelDataCache.has(id)) return levelDataCache.get(id)!
     const formData = new FormData();
     formData.append("secret", "Wmfd2893gb7");
-    formData.append("levelID", String(id));
+    formData.append("levelID",id);
 
     const r = await fetch("http://www.boomlings.com/database/downloadGJLevel22.php", {
         method: "POST",
         body: formData,
-        headers: { "User-Agent": "" }, next: { revalidate: 300 },
+        headers: { "User-Agent": "" }, 
+        // next: { revalidate: 300 },
     })
+    if(!r.ok){
+        console.error(`downloadGJLevel22 failed. ${r.status}`)
+    }
     const data = await r.text()
+    if(data == "-1"){
+        console.error(`downloadGJLevel22 returned -1`)
+    }
     const level = unpackLevelResponse(data, "download")
     levelDataCache.set(id, level)
     return level
 }
-export async function fetchLevelInfo(id: number): Promise<FullLevel | null> {
+export async function fetchLevelInfo(id: string): Promise<FullLevel | null> {
     if (levelCache.has(id)) return levelCache.get(id)!
     const formData = new FormData();
     formData.append("secret", "Wmfd2893gb7");
-    formData.append("str", String(id));
+    formData.append("str", id);
     formData.append("type", "0");
 
     const r = await fetch("http://www.boomlings.com/database/getGJLevels21.php", {
         method: "POST",
         body: formData,
-        headers: { "User-Agent": "" }, next: { revalidate: 300 },
+        headers: { "User-Agent": "" },
+        //  next: { revalidate: 300 },
     })
+    if(!r.ok){
+        console.error(`getGJLevel21 failed. ${r.status}`)
+    }
     const data = await r.text()
+    if(data == "-1"){
+        console.error(`getGJLevel21 returned -1`)
+    }
     const level = unpackLevelResponse(data, "get")
     levelCache.set(id, level)
     return level

@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const level = await fetchLevelInfo(parseInt(id, 10))
+  const level = await fetchLevelInfo(id)
 
   if (!level || !level.id){
     return new NextResponse(null, {status: 404})
