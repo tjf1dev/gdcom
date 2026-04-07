@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        overflow: hidden;
+      }
+      canvas{
+        position: fixed;
+        top: 50%;
+        left:50%;
+        translate: -50% -50%;
+        display: block;
+      }
+    </style>
+
+    <!-- main game -->
+    <script type="module" src="./game.js"></script
+
+    <!-- patches / overrides -->
+    <script type="module" src="./patches.js"></script>
+
+    <script>
+      (function () {
+        const open = XMLHttpRequest.prototype.open;
+        const send = XMLHttpRequest.prototype.send;
+
+        XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+          this._url = url;
+          return open.call(this, method, url, ...rest);
+        };
+
+        XMLHttpRequest.prototype.send = function (...args) {
+          this.addEventListener("readystatechange", function () {
+            if (
+              this.readyState === 4 &&
+              typeof this._url === "string" &&
+              this._url.includes("1.txt")
+            ) {
+              const custom = localStorage.getItem("level");
+              if (custom) {
+                Object.defineProperty(this, "responseText", {
+                  value: custom
+                });
+              }
+            }
+          });
+
+          return send.apply(this, args);
+        };
+      })();
+    </script>
+  </head>
+
+  <body style="height: 100%">
+    <canvas width="1338" height="640"></canvas>
+  </body>
+</html>
