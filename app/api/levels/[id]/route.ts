@@ -3,10 +3,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: number }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const level = await fetchLevelInfo(id)
+  const level = await fetchLevelInfo(parseInt(id, 10))
 
   if (!level || !level.id){
     return new NextResponse(null, {status: 404})
